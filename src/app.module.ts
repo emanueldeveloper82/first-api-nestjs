@@ -1,0 +1,56 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+
+
+
+
+@Module({
+  imports: [
+    UserModule,
+    AuthModule,
+    ConfigModule.forRoot(),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100
+    }]),
+    MailerModule.forRoot({
+      // transport: process.env.CONFIG_MAIL,
+      transport: {
+        host: process.env.HOST_MAIL,
+        port: Number(process.env.PORT_MAIL),
+        auth: {
+          user: process.env.USER_MAIL,
+          pass: process.env.PASSWORD_MAIL
+        }
+      },
+
+      defaults: {
+        from: '"App User free" <elroy.murray@ethereal.email>',
+      },
+      template: {
+        dir: __dirname + '/templates',
+        adapter: new PugAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
+})
+export class AppModule { }
