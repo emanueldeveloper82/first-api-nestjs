@@ -84,7 +84,7 @@ export class AuthService {
      * Performs user login;
      * @param email 
      * @param password 
-     * @returns CreateUserDTO
+     * @returns String
      */
     async login(email: string, password: string) {
         const user = await this.prismaService.user.findFirst({
