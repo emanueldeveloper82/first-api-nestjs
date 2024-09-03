@@ -2,14 +2,14 @@ import { Body, Controller, Delete, Get, HttpStatus, Patch, Post, Put, UseGuards,
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { UpdateUserDTO } from "./dto/update-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
-import { UserService } from "./user.service";
-import { LoggingInterceptor } from "src/interceptors/logging.interceptor";
-import { ParamId } from "src/decorators/param-id.decorator";
-import { Roles } from "src/decorators/roles.decorator";
-import { Role } from "src/enums/role.enum";
-import { RoleGuard } from "src/guards/role.guard";
-import { AuthGuard } from "src/guards/auth.guard";
 import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { UserService } from "./user.service";
+import { Roles } from "../decorators/roles.decorator";
+import { Role } from "../enums/role.enum";
+import { AuthGuard } from "../guards/auth.guard";
+import { RoleGuard } from "../guards/role.guard";
+import { LoggingInterceptor } from "../interceptors/logging.interceptor";
+import { ParamId } from "../decorators/param-id.decorator";
 
 @ApiTags('Users')
 @Roles(Role.Admin)
@@ -43,8 +43,8 @@ export class UserController {
         }
     })
     @Post()
-    async create(@Body() { name, email, password, role }: CreateUserDTO) {
-        return this.userService.create({ name, email, password, role });
+    async create(@Body() data: CreateUserDTO) {
+        return this.userService.create(data);
     }
 
 
@@ -227,7 +227,7 @@ export class UserController {
     @ApiOkResponse({
         status: HttpStatus.OK,
         description: 'This action delete one User with id.',
-        type: UpdateUserDTO,
+        example: {"message":"User removed successfully."},
       })
     @ApiForbiddenResponse({ status: HttpStatus.FORBIDDEN, 
         example: {

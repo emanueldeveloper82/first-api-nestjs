@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
-import { PrismaService } from "src/prisma/prisma.service";
 import { info } from "console";
 import { UpdateUserDTO } from "./dto/update-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class UserService {
@@ -18,9 +18,15 @@ export class UserService {
      */
     async create(data: CreateUserDTO) {
         info('This action adds a new User');
+
+        await this.existsWithEmail(data.email);
         try {
-            const salt = await bcrypt.genSalt()
-            data.password = await bcrypt.hash(data.password, salt);
+            /**Converts a date to a standard database format;*/
+            data.birth_at = this.checkBirthAt(data.birth_at);
+            /** Turn a password into a hash;*/
+            data.password = await this.generateCryptPassword(data.password);
+            /**Transform the role field into a number */
+            data.role = Number(data.role);
 
             return this.prisma.user.create({
                 data,
@@ -38,20 +44,15 @@ export class UserService {
      */
     async update(id: number, data: UpdateUserDTO) {
         info('This action update a User with id: ', id);
-
         await this.exists(id);
 
         try {
-
             /** Turn a password into a hash;*/
-            const salt = await bcrypt.genSalt()
-            data.password = await bcrypt.hash(data.password, salt);
-
+            data.password = await this.generateCryptPassword(data.password);
+            /**Transform the role field into a number */
+            data.role = Number(data.role);
             /**Converts a date to a standard database format;*/
-            if (data.birth_at) {
-                const birthdate = new Date(data.birth_at)
-                data.birth_at = birthdate
-            }
+            data.birth_at = this.checkBirthAt(data.birth_at);
 
             return this.prisma.user.update({
                 data,
@@ -79,15 +80,16 @@ export class UserService {
 
         try {
             /**Converts a date to a standard database format;*/
-            if (data.birth_at) {
-                const birthdate = new Date(data.birth_at)
-                data.birth_at = birthdate
+            data.birth_at = this.checkBirthAt(data.birth_at);
+
+            /**Transform the role field into a number */
+            if (data.role) {
+                data.role = Number(data.role);
             }
 
             /** Turn a password into a hash;*/
             if (data.password) {
-                const salt = await bcrypt.genSalt()
-                data.password = await bcrypt.hash(data.password, salt);
+                data.password = await this.generateCryptPassword(data.password);
             }
 
             return this.prisma.user.update({
@@ -149,7 +151,7 @@ export class UserService {
         try {
             return this.prisma.user.delete({
                 where: { id }
-            });            
+            });
         } catch (error) {
             throw new BadRequestException(error);
         }
@@ -168,5 +170,43 @@ export class UserService {
         }
     }
 
+    /**
+     * Method that checks if the user exists via e-mail;
+     * @param email
+     * @return boolean 
+     */
+     async existsWithEmail(email: string) {
+        const userExists = await this.prisma.user.count({
+            where: { email }
+        });
+
+        if (userExists) {
+            throw new BadRequestException(`This user with email ${email} already exists!`);
+        }
+    }
+
+    /**
+     * This method adjusts the birth date to the correct type.
+     * @param birth_at 
+     * @returns 
+     */
+    checkBirthAt(birth_at: Date) {
+        if (birth_at) {
+            return new Date(birth_at)
+        }
+    }
+
+    /**
+     * This method generates an encrypted password.
+     * @param password 
+     * @returns string
+     */
+    async generateCryptPassword(password: string) {
+        if (password) {
+            const salt = await bcrypt.genSalt()
+            password = await bcrypt.hash(password, salt);
+            return password;
+        }
+    }
 
 }

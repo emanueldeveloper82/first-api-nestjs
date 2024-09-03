@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsDate, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword } from "class-validator";
-import { Role } from "src/enums/role.enum";
+import { Role } from "../../enums/role.enum";
 
 
 export class CreateUserDTO {
@@ -33,6 +33,7 @@ export class CreateUserDTO {
     @ApiProperty()
     @IsOptional()
     @IsEnum(Role)
+    @Type(() => Number)
     role: number;
 
 }
