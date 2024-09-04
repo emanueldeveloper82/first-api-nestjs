@@ -9,18 +9,17 @@ import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 
-
-
-
 @Module({
   imports: [
     UserModule,
     AuthModule,
     ConfigModule.forRoot(),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     MailerModule.forRoot({
       // transport: process.env.CONFIG_MAIL,
       transport: {
@@ -28,8 +27,8 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
         port: Number(process.env.PORT_MAIL),
         auth: {
           user: process.env.USER_MAIL,
-          pass: process.env.PASSWORD_MAIL
-        }
+          pass: process.env.PASSWORD_MAIL,
+        },
       },
 
       defaults: {
@@ -49,8 +48,8 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+      useClass: ThrottlerGuard,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

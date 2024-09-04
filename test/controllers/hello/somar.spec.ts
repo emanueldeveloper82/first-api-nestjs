@@ -1,4 +1,4 @@
-import { somar } from "./somar";
+import { somar } from './somar';
 
 /**
  * ******** MANUAL TEST ************
@@ -9,9 +9,8 @@ import { somar } from "./somar";
  *      Or: npm test test/controllers/user/user.controller.test.spec.ts unit test;
  */
 test('Este é o meu primeiro teste', () => {
+  const resultado = somar(3, 2);
+  const expected = 5;
 
-    const resultado = somar(3,2);
-    const expected = 5;
-
-    expect(resultado).toEqual(expected);
-})
+  expect(resultado).toEqual(expected);
+});

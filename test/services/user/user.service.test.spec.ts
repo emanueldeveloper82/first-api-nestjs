@@ -1,13 +1,12 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { userList } from "../../../test/mock/user-list.mock";
-import { createUserDTO } from "../../../test/mock/create-user-dto.mock";
-import { updatePutUserDTO } from "../../../test/mock/update-put-user-dto.mock";
-import { updatePatchUserDTO } from "../../../test/mock/update-patch-user-dto.mock";
-import { userRepositoryMock } from "../../../test/mock/user-prisma-mock";
-import { userServiceMock } from "../../../test/mock/user-service.mock";
-import { PrismaService } from "../../../src/prisma/prisma.service";
-import { UserService } from "../../../src/user/user.service";
-
+import { Test, TestingModule } from '@nestjs/testing';
+// import { userList } from '../../../test/mock/user-list.mock';
+// import { createUserDTO } from '../../../test/mock/create-user-dto.mock';
+// import { updatePutUserDTO } from '../../../test/mock/update-put-user-dto.mock';
+// import { updatePatchUserDTO } from '../../../test/mock/update-patch-user-dto.mock';
+import { userRepositoryMock } from '../../../test/mock/user-prisma-mock';
+// import { userServiceMock } from '../../../test/mock/user-service.mock';
+import { PrismaService } from '../../../src/prisma/prisma.service';
+import { UserService } from '../../../src/user/user.service';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -15,7 +14,6 @@ describe('UserService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserService, PrismaService, userRepositoryMock],
-    
     }).compile();
 
     userService = module.get<UserService>(UserService);
@@ -29,7 +27,7 @@ describe('UserService', () => {
   //   test('method create', async () => {
 
   //     jest.spyOn(userRepositoryMock.useValue, 'existsWithEmail').mockResolvedValueOnce(true);
-      
+
   //     const result = await userService.create(createUserDTO);
   //     expect(result.name).toEqual(userList[2].name);
   //   });
@@ -65,14 +63,12 @@ describe('UserService', () => {
   // });
 
   // describe('Delete', () => {
-    
+
   //   test('method delete', async () => {
   //     const result =  userService.delete(1000);
   //     //TODO: Verificar esse teste.
   //     //expect(result).toThrow(new NotFoundException('This user with id 1000 not found!'))
   //   })
-    
+
   // });
-
 });
-
